@@ -10,6 +10,13 @@ public class Bullet : MonoBehaviour
     {
         _ridgidBodyOfBullet.AddForce(new Vector2(0, _speedOfBullet));
     }
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.gameObject.tag == "Enemy")
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Update()
     {
         if(transform.position.y > 6)

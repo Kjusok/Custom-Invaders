@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float _delayForStep;
+    [SerializeField] private RectTransform _enemyRect;
 
-    // Update is called once per frame
-    void Update()
+    private float _step = 0.1f;
+    private void Start()
     {
-        
+        StartCoroutine(MovingEnemiesDown());
+    }
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        Debug.Log("collision");
+        if (collider.gameObject.tag == "Bullet")
+        {
+            Destroy(gameObject);
+        }
+    }
+    private IEnumerator MovingEnemiesDown()
+    {
+        while (true)
+        {
+            transform.position = new Vector2(transform.position.x, transform.position.y - _step);
+            yield return new WaitForSeconds(_delayForStep);
+        }
     }
 }
