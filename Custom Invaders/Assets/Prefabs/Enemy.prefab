@@ -101,8 +101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b27e48ca218d1ce419f04aa853322e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _delayForStep: 1
+  _delayForStep: 0.5
   _enemyRect: {fileID: 3304598970593298447}
+  _step: 0.1
 --- !u!61 &-4823808447886631817
 BoxCollider2D:
   m_ObjectHideFlags: 0
