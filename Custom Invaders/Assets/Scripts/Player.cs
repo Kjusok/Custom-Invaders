@@ -3,46 +3,62 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
-
 {
     [SerializeField] private float _playerSpeed;
-    [SerializeField] private float _rightWall;
-    [SerializeField] private float _leftWall;
     [SerializeField] private GameObject _bullet;
-    [SerializeField] private RectTransform _gameBoard;
+    [SerializeField] private float _fireDelay;
+    private Coroutine _fireFrequency;
 
     private Vector2 _positionOfSpawnedBullet;
-    private Vector2 _playerPosition;
+    private float _timerForNextShot;
+    private float _adjustment = 0.45f;
+    private float _xMin;
+    private float _xMax;
     private void Start()
     {
-        _playerPosition = transform.position;
+        MoveBorders();
     }
-    private void FireToGuns()
+    private void MoveBorders()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        Camera gameCamera = Camera.main;
+
+        _xMin = gameCamera.ViewportToWorldPoint(new Vector2(0, 0)).x + _adjustment;
+        _xMax = gameCamera.ViewportToWorldPoint(new Vector2(1, 0)).x - _adjustment;
+    }
+    private IEnumerator FireDelay()
+    {
+        while (true)
         {
             _positionOfSpawnedBullet = gameObject.transform.position;
-            Instantiate(_bullet, new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + 0.65f), Quaternion.Euler(0, 0, 90), _gameBoard.transform);
+            Instantiate(_bullet, new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + 0.65f), Quaternion.Euler(0, 0, 90));
+            yield return new WaitForSeconds(_fireDelay);
+        }
+    }
+    private void Fire()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && _timerForNextShot<=0)
+        {
+            _timerForNextShot += _fireDelay;
+            _fireFrequency = StartCoroutine(FireDelay());
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            StopCoroutine(_fireFrequency);
         }
     }
     private void MoveOfPlayer()
-    {
-        _playerPosition.x += Input.GetAxis("Horizontal") * _playerSpeed;
-        transform.position = _playerPosition;
-        if (_playerPosition.x < _leftWall)
-        {
-            transform.position = new Vector2(_leftWall, _playerPosition.y);
-            _playerPosition.x = _leftWall;
-        }
-        if (_playerPosition.x > _rightWall)
-        {
-            transform.position = new Vector3(_rightWall, _playerPosition.y);
-            _playerPosition.x = _rightWall;
-        }
+    { 
+      var deltaX = Input.GetAxis("Horizontal") * _playerSpeed;
+      var newPosX =  Mathf.Clamp(transform.position.x + deltaX, _xMin, _xMax);
+        transform.position = new Vector2(newPosX, -4.4f);
     }
     void Update()
     {
-        FireToGuns();
+        if (_timerForNextShot > 0)
+        {
+            _timerForNextShot -= Time.deltaTime;
+        }
+        Fire();
         MoveOfPlayer();
     }
 }
