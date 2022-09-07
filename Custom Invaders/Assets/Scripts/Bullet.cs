@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -10,18 +8,14 @@ public class Bullet : MonoBehaviour
     {
         _ridgidBodyOfBullet.AddForce(new Vector2(0, _speedOfBullet));
     }
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collider.gameObject.tag == "Enemy")
+        var enemy = other.GetComponent<Enemy>();
+        if (enemy)
         {
-            Destroy(gameObject);
+            enemy.Kill();
         }
-    }
-    private void Update()
-    {
-        if(transform.position.y > 6)
-        {
-            Destroy(gameObject);
-        }
+
+        Destroy(gameObject);
     }
 }

@@ -96,6 +96,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerSpeed: 0.1
-  _bullet: {fileID: 0}
-  _gameBoard: {fileID: 0}
+  _bullet: {fileID: 6981470927805687282, guid: e3e6b8456fb232f448ba656ac0e6f5c1, type: 3}
   _fireDelay: 0
