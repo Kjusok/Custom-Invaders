@@ -3,15 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _menuPanel;
-    [SerializeField] private Enemy _enemyPrefab;
-    [SerializeField] private RectTransform _boardSpawn;
-
-    private float _padding = 0.5f;
-    private float _posX;
-    private float _posY;
-    public int _counterForEnemy;
-
     private static GameManager _instance;
 
     public static GameManager Instance
@@ -25,27 +16,25 @@ public class GameManager : MonoBehaviour
             return _instance;
         }
     }
+
+    [SerializeField] private GameObject _menuPanel;
+    [SerializeField] private Enemy _enemyPrefab;
+    [SerializeField] private RectTransform _boardSpawn;
+
+    private float _padding = 0.5f;
+    private float _posX;
+    private float _posY;
+    private int _counterForEnemy;
+
+
     private void Awake()
     {
         _instance = this;
-    }
-    private void OnDestroy()
-    {
-        if (_instance == this)
-        {
-            _instance = null;
-        }
     }
     private void Start()
     {
         Time.timeScale = 1f;
         SpawnEnemy();
-    }
-    public void PressButtonStartAgain()
-    {
-        SceneManager.LoadScene("MainScene");
-        Debug.Log(_counterForEnemy);
-
     }
     private void SpawnEnemy()
     {
@@ -57,27 +46,49 @@ public class GameManager : MonoBehaviour
             {
                 _posX = j + _padding;
 
-                if (Random.Range(0, 101) > 50)
+                if (Random.Range(0, 2) == 0)
                 {
                     var enemy = Instantiate(_enemyPrefab, new Vector2(_posX, _posY), Quaternion.identity);
                     enemy.transform.SetParent(_boardSpawn.transform, false);
 
-                     _counterForEnemy++;
+                    _counterForEnemy++;
                 }
             }
         }
     }
-    public void StopGame()
-    {
-        _menuPanel.SetActive(true);
-        Time.timeScale = 0f;
-    }
+
     private void Update()
     {
         if (_counterForEnemy == 0)
         {
-            StopGame();
+            GameOver();
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
+    }
+
+    public void KillEnemy()
+    {
+        _counterForEnemy--;
+    }
+
+    public void PressButtonStartAgain()
+    {
+        SceneManager.LoadScene("MainScene");
+        Debug.Log(_counterForEnemy);
+
+    }
+   
+    public void GameOver()
+    {
+        _menuPanel.SetActive(true);
+        Time.timeScale = 0f;
     }
 }
 
