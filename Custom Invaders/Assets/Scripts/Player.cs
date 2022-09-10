@@ -4,16 +4,14 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _playerSpeed;
-    [SerializeField] private GameObject _bullet;
+    [SerializeField] private Bullet _bullet;
     [SerializeField] private float _fireDelay;
 
     private Vector2 _positionOfSpawnedBullet;
-    private float _timerForNextShot;
     private float _adjustment = 0.45f;
     private float _paddingForSpawnBullet = 0.65f;
     private float _xMin;
     private float _xMax;
-    private bool _needFire;
 
 
     private void Start()
@@ -24,17 +22,17 @@ public class Player : MonoBehaviour
 
     private void Fire()
     {
-        if (!_needFire)
+        if (Input.GetKey(KeyCode.Space) && GameManager.Instance._bulletOnBoard == false)
         {
-            return;
-        }
-        _timerForNextShot += _fireDelay;
+            _positionOfSpawnedBullet = gameObject.transform.position;
+            Instantiate(_bullet,
+                new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + _paddingForSpawnBullet),
+                Quaternion.Euler(0, 0, 90));
 
-        _positionOfSpawnedBullet = gameObject.transform.position;
-        Instantiate(_bullet,
-            new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + _paddingForSpawnBullet),
-            Quaternion.Euler(0, 0, 90));
+            GameManager.Instance._bulletOnBoard = true;
+        }
     }
+
 
     private void MoveOfPlayer()
     {
@@ -51,22 +49,6 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _needFire = true;
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            _needFire = false;
-        }
-
-        if (_timerForNextShot > 0)
-        {
-            _timerForNextShot -= Time.deltaTime;
-        }
-        else
-        {
-            Fire();
-        }
+        Fire();
     }
 }

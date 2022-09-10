@@ -5,14 +5,26 @@ using System;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private float _delayForStep;
-    [SerializeField] private float _step;
+    [SerializeField] private EnemyBullet _enemyBullet;
 
+    private int _layerMaskOnlyPlaer = 1 << 8;
+    private float _paddingForSpawnBullet = 0.65f;
     private float _positionEnemyForLooseY = -4.5f;
-
+    private float _stepForVertical = -0.5f;
+    private Vector2 _positionOfSpawnedEnemyBullet;
+    private Vector3 _directionForX = Vector2.right;
+    private Vector3 _directionForY = Vector2.down;
+    private Vector3 _position;
+    private float _xMin;
+    private float _xMax;
+    private float _padding = 0.5f;
 
     private void Start()
     {
         StartCoroutine(MovingEnemiesDown());
+
+        _xMin = Camera.main.ViewportToWorldPoint(new Vector2(0, 0)).x + _padding;
+        _xMax = Camera.main.ViewportToWorldPoint(new Vector2(1, 0)).x - _padding;
     }
 
     public void Kill()
@@ -25,11 +37,54 @@ public class Enemy : MonoBehaviour
     {
         while (transform.position.y > _positionEnemyForLooseY)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y - _step, 0);
+            if (GameManager.Instance.EnemyMovement == EnemyMovement.Horizontal)
+            {
+                transform.position += _directionForX * GameManager.Instance._stepForEnemyHorizontal;
+                _position = transform.position;
+            }
+            if (GameManager.Instance.EnemyMovement == EnemyMovement.Down)
+            {
+                transform.position -= _directionForY * _stepForVertical;
+            }
             yield return new WaitForSeconds(_delayForStep);
         }
 
         GameManager.Instance.GameOver();
     }
-}
+
+    private void CheckPosition()
+    {
+        if ((transform.position.x >= _xMax && GameManager.Instance._stepForEnemyHorizontal > 0) ||
+            (transform.position.x <= _xMin && GameManager.Instance._stepForEnemyHorizontal < 0))
+        {
+            GameManager.Instance.ChangeMovementEnemy();
+        }
+        else if (transform.position.y < _position.y)
+        {
+            GameManager.Instance.EnemyMovement = EnemyMovement.Horizontal;
+        }
+    }
+
+    private void Update()
+    {
+        CheckPosition();
+
+        if (Physics2D.Raycast(transform.position, Vector2.down,  Mathf.Infinity, _layerMaskOnlyPlaer ))
+        {
+            Fire();
+        }
+    }
+
+    private void Fire()
+    {
+        if (UnityEngine.Random.Range(0, 1001) < 1)
+        {
+            _positionOfSpawnedEnemyBullet = gameObject.transform.position;
+
+            Instantiate(_enemyBullet,
+                new Vector2(_positionOfSpawnedEnemyBullet.x, _positionOfSpawnedEnemyBullet.y - _paddingForSpawnBullet),
+                Quaternion.Euler(0, 0, 90));
+        }
+    }
+} 
 

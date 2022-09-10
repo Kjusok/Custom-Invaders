@@ -1,5 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+public enum EnemyMovement
+{
+    Horizontal,
+    Down
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -26,6 +31,10 @@ public class GameManager : MonoBehaviour
     private float _posY;
     private int _counterForEnemy;
 
+    public bool _bulletOnBoard;
+    public float _stepForEnemyHorizontal;
+    public EnemyMovement EnemyMovement;
+
 
     private void Awake()
     {
@@ -34,6 +43,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1f;
+        _stepForEnemyHorizontal = 0.3f;
+        EnemyMovement = EnemyMovement.Horizontal;
         SpawnEnemy();
     }
     private void SpawnEnemy()
@@ -50,6 +61,8 @@ public class GameManager : MonoBehaviour
                 {
                     var enemy = Instantiate(_enemyPrefab, new Vector2(_posX, _posY), Quaternion.identity);
                     enemy.transform.SetParent(_boardSpawn.transform, false);
+
+                    enemy.GetComponent<EnemyBullet>();
 
                     _counterForEnemy++;
                 }
@@ -73,6 +86,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ChangeMovementEnemy()
+    {
+        _stepForEnemyHorizontal *= -1.0f;
+        EnemyMovement = EnemyMovement.Down;
+    }
+
     public void KillEnemy()
     {
         _counterForEnemy--;
@@ -84,7 +103,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(_counterForEnemy);
 
     }
-   
+
     public void GameOver()
     {
         _menuPanel.SetActive(true);

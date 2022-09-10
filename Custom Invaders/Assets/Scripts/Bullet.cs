@@ -13,11 +13,18 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         var enemy = other.GetComponent<Enemy>();
+        var enemyBullet = other.GetComponent<EnemyBullet>();
+        var player = other.GetComponent<Player>();
+
         if (enemy)
         {
             enemy.Kill();
         }
 
-        Destroy(gameObject);
+        if (!enemyBullet && !player)
+        {
+            Destroy(gameObject);
+            GameManager.Instance._bulletOnBoard = false;
+        }
     }
 }

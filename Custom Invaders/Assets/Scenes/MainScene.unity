@@ -155,8 +155,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -8, y: 4.5}
-  m_SizeDelta: {x: 16, y: 4}
+  m_AnchoredPosition: {x: -7, y: 4.5}
+  m_SizeDelta: {x: 14, y: 4}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &143099900
 GameObject:
@@ -606,7 +606,9 @@ MonoBehaviour:
   _menuPanel: {fileID: 771185979}
   _enemyPrefab: {fileID: -7973012650806822227, guid: 1261c2e041327544fbb119fe801ef479, type: 3}
   _boardSpawn: {fileID: 115644864}
-  _counterForEnemy: 0
+  _bulletOnBoard: 0
+  _stepForEnemyHorizontal: 0
+  EnemyMovement: 0
 --- !u!1 &1689742371
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +758,7 @@ PrefabInstance:
     - target: {fileID: 4452665514640979977, guid: b58b505f8bf67a24fa6164d9e39b4c17, type: 3}
       propertyPath: _bullet
       value: 
-      objectReference: {fileID: 6981470927805687282, guid: e3e6b8456fb232f448ba656ac0e6f5c1, type: 3}
+      objectReference: {fileID: 8283849215182869152, guid: e3e6b8456fb232f448ba656ac0e6f5c1, type: 3}
     - target: {fileID: 4452665514640979977, guid: b58b505f8bf67a24fa6164d9e39b4c17, type: 3}
       propertyPath: _fireDelay
       value: 0.5
