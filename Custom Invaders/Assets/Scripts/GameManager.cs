@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField] private GameObject _menuPanel;
+    [SerializeField] private GameObject _nextLevelPanel;
     [SerializeField] private Enemy _enemyPrefab;
     [SerializeField] private RectTransform _boardSpawn;
     [SerializeField] private GameObject[] _healthPrefab;
@@ -32,7 +33,9 @@ public class GameManager : MonoBehaviour
     private float _posY;
     private int _counterForEnemy;
     private int _healthOfPlayer = 3;
+    private float _speedForEnemySteps=0.05f;
 
+    public float _delayForStepEnemy=0.4f;
     public bool _bulletOnBoard;
     public float _stepForEnemyHorizontal;
     public EnemyMovement EnemyMovement;
@@ -77,10 +80,21 @@ public class GameManager : MonoBehaviour
     {
         if (_counterForEnemy == 0)
         {
-            GameOver();
+            StartNextLevel();
         }
     }
 
+    private void StartNextLevel()
+    {
+        _nextLevelPanel.SetActive(true);
+    }
+    public void PressNextLevelButton()
+    {
+        _delayForStepEnemy -= _speedForEnemySteps;
+        _nextLevelPanel.SetActive(false);
+
+        SpawnEnemy();
+    }
     private void OnDestroy()
     {
         if (_instance == this)

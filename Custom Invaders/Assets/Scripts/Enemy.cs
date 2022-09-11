@@ -4,7 +4,6 @@ using System;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float _delayForStep;
     [SerializeField] private EnemyBullet _enemyBullet;
 
     private int _layerMaskOnlyPlaer = 1 << 8;
@@ -46,7 +45,7 @@ public class Enemy : MonoBehaviour
             {
                 transform.position -= _directionForY * _stepForVertical;
             }
-            yield return new WaitForSeconds(_delayForStep);
+            yield return new WaitForSeconds(GameManager.Instance._delayForStepEnemy);
         }
 
         GameManager.Instance.GameOver();
