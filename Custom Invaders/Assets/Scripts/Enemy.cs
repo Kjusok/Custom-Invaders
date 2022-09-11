@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     private Vector3 _position;
     private float _xMin;
     private float _xMax;
-    private float _padding = 0.5f;
+    private float _padding = 0.7f;
 
     private void Start()
     {
@@ -86,5 +86,15 @@ public class Enemy : MonoBehaviour
                 Quaternion.Euler(0, 0, 90));
         }
     }
-} 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var player = other.GetComponent<Player>();
+
+        if (player)
+        {
+            GameManager.Instance.PlayerTakeDamage();
+            Kill();
+        }
+    }
+}
 

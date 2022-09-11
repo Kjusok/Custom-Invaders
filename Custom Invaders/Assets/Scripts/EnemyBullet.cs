@@ -17,10 +17,15 @@ public class EnemyBullet : MonoBehaviour
     {
         var enemy = other.GetComponent<Enemy>();
         var bulletPlayer = other.GetComponent<Bullet>();
+        var player = other.GetComponent<Player>();
 
         if (!enemy && !bulletPlayer)
         {
             Destroy(gameObject);
+        }
+        if (player)
+        {
+            GameManager.Instance.PlayerTakeDamage();
         }
     }
 }

@@ -25,11 +25,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _menuPanel;
     [SerializeField] private Enemy _enemyPrefab;
     [SerializeField] private RectTransform _boardSpawn;
+    [SerializeField] private GameObject[] _healthPrefab;
 
     private float _padding = 0.5f;
     private float _posX;
     private float _posY;
     private int _counterForEnemy;
+    private int _healthOfPlayer = 3;
 
     public bool _bulletOnBoard;
     public float _stepForEnemyHorizontal;
@@ -45,6 +47,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         _stepForEnemyHorizontal = 0.3f;
         EnemyMovement = EnemyMovement.Horizontal;
+
         SpawnEnemy();
     }
     private void SpawnEnemy()
@@ -86,6 +89,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void PlayerTakeDamage()
+    {
+        _healthOfPlayer -= 1;
+
+        if (_healthOfPlayer >= 0)
+        {
+            Destroy(_healthPrefab[_healthOfPlayer]);
+        }
+        if (_healthOfPlayer == 0)
+        {
+            GameOver();
+        }
+    }
     public void ChangeMovementEnemy()
     {
         _stepForEnemyHorizontal *= -1.0f;
@@ -100,8 +116,6 @@ public class GameManager : MonoBehaviour
     public void PressButtonStartAgain()
     {
         SceneManager.LoadScene("MainScene");
-        Debug.Log(_counterForEnemy);
-
     }
 
     public void GameOver()

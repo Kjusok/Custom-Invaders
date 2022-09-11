@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b27e48ca218d1ce419f04aa853322e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _delayForStep: 0.5
+  _delayForStep: 0.3
   _enemyBullet: {fileID: 1207182021149491762, guid: 0fc5fa807b68c9f44b81ff367db86fa1, type: 3}
 --- !u!61 &6141238489761023471
 BoxCollider2D:
@@ -113,7 +113,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.0022111535, y: -0.03390476}
