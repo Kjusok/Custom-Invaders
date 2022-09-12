@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Enemy _enemyPrefab;
     [SerializeField] private RectTransform _boardSpawn;
     [SerializeField] private GameObject[] _healthPrefab;
+    [SerializeField] private ItemManager _itemManager;
 
     private float _padding = 0.5f;
     private float _posX;
@@ -125,6 +126,10 @@ public class GameManager : MonoBehaviour
     public void KillEnemy()
     {
         _counterForEnemy--;
+        if(_counterForEnemy % 5 == 0)
+        {
+            _itemManager.SpawnItem();
+        }
     }
 
     public void PressButtonStartAgain()

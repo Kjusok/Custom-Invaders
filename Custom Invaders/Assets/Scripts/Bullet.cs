@@ -15,13 +15,14 @@ public class Bullet : MonoBehaviour
         var enemy = other.GetComponent<Enemy>();
         var enemyBullet = other.GetComponent<EnemyBullet>();
         var player = other.GetComponent<Player>();
+        var item = other.GetComponent<Item>();
 
         if (enemy)
         {
             enemy.Kill();
         }
 
-        if (!enemyBullet && !player)
+        if (!enemyBullet && !player && !item)
         {
             Destroy(gameObject);
             GameManager.Instance._bulletOnBoard = false;

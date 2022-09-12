@@ -18,8 +18,9 @@ public class EnemyBullet : MonoBehaviour
         var enemy = other.GetComponent<Enemy>();
         var bulletPlayer = other.GetComponent<Bullet>();
         var player = other.GetComponent<Player>();
+        var item = other.GetComponent<Item>();
 
-        if (!enemy && !bulletPlayer)
+        if (!enemy && !bulletPlayer && !item)
         {
             Destroy(gameObject);
         }
