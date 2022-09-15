@@ -11,6 +11,7 @@ public class Item : MonoBehaviour
     private float _positionForLoseItem = -5.5f;
     private float _timeForItem = 10f;
 
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         var player = other.GetComponent<Player>();
@@ -35,7 +36,7 @@ public class Item : MonoBehaviour
 
     private void Update()
     {
-        if(transform.position.y < _positionForLoseItem)
+        if(transform.position.y < _positionForLoseItem || GameManager.Instance._timerForStarLevel > 0)
         {
             Destroy(gameObject);
         }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 public enum EnemyMovement
 {
     Horizontal,
@@ -26,19 +27,24 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject _menuPanel;
     [SerializeField] private GameObject _nextLevelPanel;
+    [SerializeField] private GameObject _secondToStartPanel;
     [SerializeField] private Enemy _enemyPrefab;
     [SerializeField] private RectTransform _boardSpawn;
     [SerializeField] private GameObject[] _healthPrefab;
     [SerializeField] private ItemManager _itemManager;
     [SerializeField] private List<Enemy> _enemyList;
+    [SerializeField] private Text _currentLevelText;
+    [SerializeField] private Text _timerForNetLevelText;
 
     private float _padding = 0.5f;
     private float _posX;
     private float _posY;
     private int _counterForEnemy;
+    private int _currentLevel=1;
     private int _healthOfPlayer = 3;
     private float _speedForEnemySteps = 0.05f;
 
+    public float _timerForStarLevel;
     public float _delayForStepEnemy = 0.4f;
     public bool _bulletOnBoard;
     public float _stepForEnemyHorizontal;
@@ -52,6 +58,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1f;
+        _timerForStarLevel = 5;
         _stepForEnemyHorizontal = 0.3f;
         EnemyMovement = EnemyMovement.Horizontal;
 
@@ -82,11 +89,53 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void TimerOnScreenBeforeStartLevel()
+    {
+        var secMax = 3;
+        var secMin = 1;
+
+        if (_timerForStarLevel > secMax)
+        {
+            _nextLevelPanel.SetActive(true);
+            _currentLevelText.text = _currentLevel.ToString();
+        }
+
+        if (_timerForStarLevel > secMin && _timerForStarLevel < secMax)
+        {
+            _nextLevelPanel.SetActive(false);
+            _secondToStartPanel.SetActive(true);
+            _timerForNetLevelText.text = _timerForStarLevel.ToString("0");
+        }
+
+        if (_timerForStarLevel < secMin)
+        {
+            _timerForNetLevelText.text = "GO!";
+        }
+
+        if (_timerForStarLevel <= 0)
+        {
+            _secondToStartPanel.SetActive(false);
+        }
+    }
+
     private void Update()
     {
         if (_counterForEnemy == 0)
         {
             StartNextLevel();
+            SpawnEnemy();
+
+            _delayForStepEnemy -= _speedForEnemySteps;
+            _currentLevel++; 
+            _timerForStarLevel += 5;
+            _nextLevelPanel.SetActive(false);
+
+        }
+        if (_timerForStarLevel > 0)
+        {
+            _timerForStarLevel -= Time.deltaTime;
+
+            TimerOnScreenBeforeStartLevel();
         }
     }
 
@@ -94,13 +143,7 @@ public class GameManager : MonoBehaviour
     {
         _nextLevelPanel.SetActive(true);
     }
-    public void PressNextLevelButton()
-    {
-        _delayForStepEnemy -= _speedForEnemySteps;
-        _nextLevelPanel.SetActive(false);
-
-        SpawnEnemy();
-    }
+   
     private void OnDestroy()
     {
         if (_instance == this)

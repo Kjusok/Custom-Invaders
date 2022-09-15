@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
 
     public BulletMovement BulletMovement;
 
+
     public void Start()
     {
         if(BulletMovement == BulletMovement.StraightUp)
@@ -27,6 +28,14 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if(GameManager.Instance._timerForStarLevel > 0)
+        {
+            GameManager.Instance._bulletOnBoard = false;
+            Destroy(gameObject);
+        }
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         var enemy = other.GetComponent<Enemy>();

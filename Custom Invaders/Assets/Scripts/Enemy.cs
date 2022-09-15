@@ -17,11 +17,11 @@ public class Enemy : MonoBehaviour
     private float _xMin;
     private float _xMax;
     private float _padding = 0.7f;
+    private bool _enemyOnTheMove;
+
 
     private void Start()
     {
-        StartCoroutine(MovingEnemiesDown());
-
         _xMin = Camera.main.ViewportToWorldPoint(new Vector2(0, 0)).x + _padding;
         _xMax = Camera.main.ViewportToWorldPoint(new Vector2(1, 0)).x - _padding;
     }
@@ -69,7 +69,17 @@ public class Enemy : MonoBehaviour
     {
         CheckPosition();
 
-        if (Physics2D.Raycast(transform.position, Vector2.down,  Mathf.Infinity, _layerMaskOnlyPlaer ))
+        if (GameManager.Instance._timerForStarLevel <= 0 && _enemyOnTheMove)
+        {
+            StartCoroutine(MovingEnemiesDown());
+            _enemyOnTheMove = false;
+        }
+        if(GameManager.Instance._timerForStarLevel > 0)
+        {
+            _enemyOnTheMove = true;
+        }
+
+        if (Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, _layerMaskOnlyPlaer))
         {
             Fire();
         }
@@ -77,7 +87,7 @@ public class Enemy : MonoBehaviour
 
     private void Fire()
     {
-        if (UnityEngine.Random.Range(0, 1001) < 1)
+        if (UnityEngine.Random.Range(0, 1001) < 1 && GameManager.Instance._timerForStarLevel <= 0)
         {
             _positionOfSpawnedEnemyBullet = gameObject.transform.position;
 

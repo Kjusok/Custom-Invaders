@@ -27,16 +27,20 @@ public class ItemManager : MonoBehaviour
     public float _timerForTripelshot;
     public float _timerForSlowDownPlayer;
 
+
     private void Awake()
     {
         _instance = this;
     }
     public void SpawnItem()
     {
-        var item = Instantiate(_items[Random.Range(0, 3)],
+        if(GameManager.Instance._timerForStarLevel <= 0)
+        {
+            var item = Instantiate(_items[Random.Range(0, 3)],
              new Vector2(Random.Range(_padding, _fieldForSpawnItem.rect.width - _padding), _positionOfSpawnedItem.y),
               Quaternion.identity);
-        item.transform.SetParent(_fieldForSpawnItem.transform, false);
+            item.transform.SetParent(_fieldForSpawnItem.transform, false);
+        }
     }
 
     private void Update()
@@ -48,6 +52,11 @@ public class ItemManager : MonoBehaviour
         if (_timerForSlowDownPlayer > 0)
         {
             _timerForSlowDownPlayer -= Time.deltaTime;
+        }
+        if (GameManager.Instance._timerForStarLevel > 0)
+        {
+            _timerForSlowDownPlayer = 0;
+            _timerForTripelshot = 0;
         }
     }
     private void OnDestroy()
