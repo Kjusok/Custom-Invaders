@@ -144,3 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29578bd8479aa5458d4228edcde19f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isTripelShot: 0
+  _isSlowDownForPlayer: 1
+  _isDestroyLineEnemys: 0

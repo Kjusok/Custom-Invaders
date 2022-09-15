@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float _playerSpeed;
     [SerializeField] private Bullet _bullet;
     [SerializeField] private float _fireDelay;
 
+    private float _playerSpeed = 10;
     private Vector2 _positionOfSpawnedBullet;
     private float _adjustment = 0.45f;
     private float _paddingForSpawnBullet = 0.65f;
@@ -25,14 +25,28 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && GameManager.Instance._bulletOnBoard == false)
         {
             _positionOfSpawnedBullet = gameObject.transform.position;
-            Instantiate(_bullet,
-                new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + _paddingForSpawnBullet),
-                Quaternion.Euler(0, 0, 90));
+            var bullet = Instantiate(_bullet,
+                 new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + _paddingForSpawnBullet),
+                 Quaternion.Euler(0, 0, 90));
+            bullet.GetComponent<Bullet>().BulletMovement = BulletMovement.StraightUp;
+
+            if (ItemManager.Instance._timerForTripelshot > 0 )
+            {
+                var rightBullet = Instantiate(_bullet,
+                    new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + _paddingForSpawnBullet),
+                    Quaternion.Euler(0, 0, 30));
+                rightBullet.GetComponent<Bullet>().BulletMovement = BulletMovement.RightBullet;
+
+                var leftBullet = Instantiate(_bullet,
+                    new Vector2(_positionOfSpawnedBullet.x, _positionOfSpawnedBullet.y + _paddingForSpawnBullet),
+                    Quaternion.Euler(0, 0, 150));
+                leftBullet.GetComponent<Bullet>().BulletMovement = BulletMovement.LeftBullet;
+
+            }
 
             GameManager.Instance._bulletOnBoard = true;
         }
     }
-
 
     private void MoveOfPlayer()
     {
@@ -50,5 +64,14 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Fire();
+
+        if (ItemManager.Instance._timerForSlowDownPlayer > 0)
+        {
+            _playerSpeed = 5;
+        }
+        else
+        {
+            _playerSpeed = 10;
+        }
     }
 }

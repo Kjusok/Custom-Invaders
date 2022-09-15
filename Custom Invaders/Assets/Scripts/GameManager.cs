@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Linq;
 public enum EnemyMovement
 {
     Horizontal,
@@ -28,15 +30,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform _boardSpawn;
     [SerializeField] private GameObject[] _healthPrefab;
     [SerializeField] private ItemManager _itemManager;
+    [SerializeField] private List<Enemy> _enemyList;
 
     private float _padding = 0.5f;
     private float _posX;
     private float _posY;
     private int _counterForEnemy;
     private int _healthOfPlayer = 3;
-    private float _speedForEnemySteps=0.05f;
+    private float _speedForEnemySteps = 0.05f;
 
-    public float _delayForStepEnemy=0.4f;
+    public float _delayForStepEnemy = 0.4f;
     public bool _bulletOnBoard;
     public float _stepForEnemyHorizontal;
     public EnemyMovement EnemyMovement;
@@ -72,6 +75,8 @@ public class GameManager : MonoBehaviour
                     enemy.GetComponent<EnemyBullet>();
 
                     _counterForEnemy++;
+
+                    _enemyList.Add(enemy);
                 }
             }
         }
@@ -104,6 +109,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void KillEnemysLowerLine()
+    {
+        for (int i = 0; i < _enemyList.Count;)
+        {
+            if (_enemyList[i] == null)
+            {
+                _enemyList.RemoveAt(i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        List<float> positionY = new List<float>();
+
+        foreach (Enemy enemy in _enemyList)
+        {
+            positionY.Add(enemy.transform.position.y);
+        }
+
+        float minY = positionY.Min();
+
+        foreach (Enemy enemy in _enemyList)
+        {
+            if (minY == enemy.transform.position.y)
+            {
+                enemy.Kill();
+            }
+        }
+
+    }
+
     public void PlayerTakeDamage()
     {
         _healthOfPlayer -= 1;
@@ -117,6 +155,7 @@ public class GameManager : MonoBehaviour
             GameOver();
         }
     }
+
     public void ChangeMovementEnemy()
     {
         _stepForEnemyHorizontal *= -1.0f;
@@ -126,7 +165,8 @@ public class GameManager : MonoBehaviour
     public void KillEnemy()
     {
         _counterForEnemy--;
-        if(_counterForEnemy % 5 == 0)
+
+        if (_counterForEnemy % 5 == 0)
         {
             _itemManager.SpawnItem();
         }
@@ -143,4 +183,3 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
     }
 }
-
