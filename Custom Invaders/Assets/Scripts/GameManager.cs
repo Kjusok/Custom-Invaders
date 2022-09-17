@@ -28,10 +28,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject _menuPanel;
     [SerializeField] private GameObject _nextLevelPanel;
     [SerializeField] private GameObject _secondToStartPanel;
+    [SerializeField] private GameObject[] _healthPrefab;
     [SerializeField] private Enemy _enemyPrefab;
     [SerializeField] private RectTransform _boardSpawn;
-    [SerializeField] private GameObject[] _healthPrefab;
-    [SerializeField] private ItemManager _itemManager;
     [SerializeField] private List<Enemy> _enemyList;
     [SerializeField] private Text _currentLevelText;
     [SerializeField] private Text _timerForNetLevelText;
@@ -39,14 +38,18 @@ public class GameManager : MonoBehaviour
     private float _padding = 0.5f;
     private float _posX;
     private float _posY;
-    private int _counterForEnemy;
-    private int _currentLevel=1;
-    private int _healthOfPlayer = 3;
     private float _speedForEnemySteps = 0.05f;
+    private float _stepForTimerForEnemyWhoWilShoot;
+    private int _counterForEnemy;
+    private int _currentLevel = 1;
+    private int _healthOfPlayer = 3;
+    private int _initialSecondsForTimerForEnemyShoot = 3;
 
+    public bool _enemySelectedToShoot;
+    public bool _bulletOnBoard;
+    public float _timerForChooseEnemyWhoWillShoot = 5;
     public float _timerForStarLevel;
     public float _delayForStepEnemy = 0.4f;
-    public bool _bulletOnBoard;
     public float _stepForEnemyHorizontal;
     public EnemyMovement EnemyMovement;
 
@@ -120,30 +123,46 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        ClearListEnemy();
+
         if (_counterForEnemy == 0)
         {
             StartNextLevel();
-            SpawnEnemy();
-
-            _delayForStepEnemy -= _speedForEnemySteps;
-            _currentLevel++; 
-            _timerForStarLevel += 5;
-            _nextLevelPanel.SetActive(false);
-
         }
+
         if (_timerForStarLevel > 0)
         {
             _timerForStarLevel -= Time.deltaTime;
 
             TimerOnScreenBeforeStartLevel();
         }
+
+        if (_timerForChooseEnemyWhoWillShoot > 0)
+        {
+            _timerForChooseEnemyWhoWillShoot -= Time.deltaTime;
+        }
+        if (_timerForChooseEnemyWhoWillShoot <= 0 && _enemySelectedToShoot == false)
+        {
+            SelectEnemyWhoFireNext();
+        }
+        if (_timerForChooseEnemyWhoWillShoot > _initialSecondsForTimerForEnemyShoot)
+        {
+            _timerForChooseEnemyWhoWillShoot = _initialSecondsForTimerForEnemyShoot;
+        }
     }
 
     private void StartNextLevel()
     {
-        _nextLevelPanel.SetActive(true);
+        SpawnEnemy();
+        SelectEnemyWhoFireNext();
+
+        _timerForChooseEnemyWhoWillShoot = 5;
+        _delayForStepEnemy -= _speedForEnemySteps;
+        _currentLevel++;
+        _stepForTimerForEnemyWhoWilShoot += 0.3f;
+        _timerForStarLevel += 5;
     }
-   
+
     private void OnDestroy()
     {
         if (_instance == this)
@@ -152,7 +171,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void KillEnemysLowerLine()
+    public void ClearListEnemy()
     {
         for (int i = 0; i < _enemyList.Count;)
         {
@@ -165,7 +184,34 @@ public class GameManager : MonoBehaviour
                 i++;
             }
         }
+    }
+    public void SelectEnemyWhoFireNext()
+    {
+        List<Enemy> enemyWhoFireNextList = new List<Enemy>();
 
+        foreach (Enemy enemy in _enemyList)
+        {
+            enemyWhoFireNextList.Add(enemy);
+        }
+
+        int indexOfEnemyWhoFireNex = Random.Range(0, enemyWhoFireNextList.Count);
+
+        var enemyWhoFire = enemyWhoFireNextList[indexOfEnemyWhoFireNex];
+
+        foreach (Enemy enemy in _enemyList)
+        {
+            if (enemy == enemyWhoFire)
+            {
+                enemy.EnemyReadyToFire();
+            }
+        }
+
+        _enemySelectedToShoot = true;
+        _timerForChooseEnemyWhoWillShoot += _initialSecondsForTimerForEnemyShoot - _stepForTimerForEnemyWhoWilShoot;
+    }
+
+    public void KillEnemysLowerLine()
+    {
         List<float> positionY = new List<float>();
 
         foreach (Enemy enemy in _enemyList)
@@ -182,7 +228,6 @@ public class GameManager : MonoBehaviour
                 enemy.Kill();
             }
         }
-
     }
 
     public void PlayerTakeDamage()
@@ -211,7 +256,7 @@ public class GameManager : MonoBehaviour
 
         if (_counterForEnemy % 5 == 0)
         {
-            _itemManager.SpawnItem();
+            ItemManager.Instance.SpawnItem();
         }
     }
 

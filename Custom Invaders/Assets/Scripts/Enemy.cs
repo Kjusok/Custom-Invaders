@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField] private EnemyBullet _enemyBullet;
 
-    private int _layerMaskOnlyPlaer = 1 << 8;
+    private int _layerMaskOnlyPlayer = 1 << 8;
     private float _paddingForSpawnBullet = 0.65f;
     private float _positionEnemyForLooseY = -4.5f;
     private float _stepForVertical = -0.5f;
@@ -18,19 +18,13 @@ public class Enemy : MonoBehaviour
     private float _xMax;
     private float _padding = 0.7f;
     private bool _enemyOnTheMove;
+    private bool _isReadyToFire = false;
 
 
     private void Start()
     {
         _xMin = Camera.main.ViewportToWorldPoint(new Vector2(0, 0)).x + _padding;
         _xMax = Camera.main.ViewportToWorldPoint(new Vector2(1, 0)).x - _padding;
-    }
-
-    public void Kill()
-    {
-        GameManager.Instance.KillEnemy();
-        
-        Destroy(gameObject);
     }
 
     private IEnumerator MovingEnemiesDown()
@@ -74,28 +68,23 @@ public class Enemy : MonoBehaviour
             StartCoroutine(MovingEnemiesDown());
             _enemyOnTheMove = false;
         }
-        if(GameManager.Instance._timerForStarLevel > 0)
+        if (GameManager.Instance._timerForStarLevel > 0)
         {
             _enemyOnTheMove = true;
         }
 
-        if (Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, _layerMaskOnlyPlaer))
+
+        if (Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, _layerMaskOnlyPlayer) &&
+            _isReadyToFire &&
+            GameManager.Instance._timerForChooseEnemyWhoWillShoot <= 0)
         {
             Fire();
+
+            _isReadyToFire = false;
+            GameManager.Instance._enemySelectedToShoot = false;
         }
     }
 
-    private void Fire()
-    {
-        if (UnityEngine.Random.Range(0, 1001) < 1 && GameManager.Instance._timerForStarLevel <= 0)
-        {
-            _positionOfSpawnedEnemyBullet = gameObject.transform.position;
-
-            Instantiate(_enemyBullet,
-                new Vector2(_positionOfSpawnedEnemyBullet.x, _positionOfSpawnedEnemyBullet.y - _paddingForSpawnBullet),
-                Quaternion.Euler(0, 0, 90));
-        }
-    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         var player = other.GetComponent<Player>();
@@ -105,6 +94,34 @@ public class Enemy : MonoBehaviour
             GameManager.Instance.PlayerTakeDamage();
             Kill();
         }
+    }
+
+    public void EnemyReadyToFire()
+    {
+        _isReadyToFire = true;
+    }
+    public void Fire()
+    {
+        if (GameManager.Instance._timerForStarLevel <= 0)
+        {
+            _positionOfSpawnedEnemyBullet = gameObject.transform.position;
+
+            Instantiate(_enemyBullet,
+                new Vector2(_positionOfSpawnedEnemyBullet.x, _positionOfSpawnedEnemyBullet.y - _paddingForSpawnBullet),
+                Quaternion.Euler(0, 0, 90));
+        }
+    }
+
+    public void Kill()
+    {
+        GameManager.Instance.KillEnemy();
+
+        if (_isReadyToFire)
+        {
+            GameManager.Instance.SelectEnemyWhoFireNext();
+        }
+
+        Destroy(gameObject);
     }
 }
 
